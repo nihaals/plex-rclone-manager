@@ -22,17 +22,6 @@ jobs:
         uses: dschep/install-poetry-action@v1.3
         with:
           create_virtualenvs: 'true'
-      - name: Set Poetry config
-        run: |
-          poetry config virtualenvs.in-project true
-      - name: Cache Poetry virtualenv
-        uses: actions/cache@v1
-        id: cache
-        with:
-          path: .venv
-          key: poetry-venv-${{ runner.os }}-${{ steps.python-version.outputs.version }}
-      - name: Install/update package and dependencies
-        run: poetry install --no-root
       - name: Build
         run: poetry build
       - name: Upload artifacts
