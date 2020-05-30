@@ -45,9 +45,9 @@ class Config:
             else:
                 config_value = self._get(config_key, overriden=Overriden.ONLY_CONFIG)
             if config_value:
-                if config_value.endswith('/'):
+                if not config_value.endswith('/'):
                     raise ValueError("All paths should have a leading slash")
-                self._set(config_key, str(Path(config_value).expanduser()), overriden=overriden)
+                self._set(config_key, str(Path(config_value).expanduser()) + '/', overriden=overriden)
 
     def _load(self) -> None:
         for file_path in (
