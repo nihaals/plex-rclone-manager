@@ -2,3 +2,4 @@
 __pycache__/
 plex_rclone_manager.egg-info/
 dist/
+poetry.lock
