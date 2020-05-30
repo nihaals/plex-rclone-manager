@@ -94,7 +94,7 @@ def clean(after_manual_import: bool, manual_import_partials: bool):
 @click.option('--media', is_flag=True)
 @click.option('--plex-data', is_flag=True)
 @click.option('--rclone-remote', '-r', default='', type=str)
-@click.option('--plex-media-server-path', '-p', default='', type=str)
+@click.option('--plex-media-server-path', '-P', default='', type=str)
 def upload(
     all: bool, local_server_setup: bool, media: bool, plex_data: bool, rclone_remote: str, plex_media_server_path: str
 ):
@@ -189,9 +189,10 @@ def plex():
 @click.option('--print', '-p', 'print_folders', is_flag=True)
 @click.option('--json', '-j', 'print_json', is_flag=True)
 @click.option('--progress', '-p', is_flag=True)
-@click.option('--plex-media-server-path', '-pp', default='', type=str)
+@click.option('--update-rate', '-u', type=int, default=50)
+@click.option('--plex-media-server-path', '-P', default='', type=str)
 def preview_thumbnails(
-    summary: bool, print_folders: bool, print_json: bool, progress: bool, plex_media_server_path: str
+    summary: bool, print_folders: bool, print_json: bool, progress: bool, update_rate: int, plex_media_server_path: str
 ):
     config.clear_overriden()
 
@@ -211,15 +212,16 @@ def preview_thumbnails(
         echo("Summary must be given if using progress")
         raise click.Abort()
 
-    # if progress is True and print_folders is True:
-    #     echo("Progress does not support printing folders")
-    #     raise click.Abort()
+    if update_rate < 1:
+        echo("Update rate must be at least 1")
+        raise click.Abort()
 
     if plex_media_server_path:
         config.set_value(ConfigKey.PLEX_MEDIA_SERVER_PATH, plex_media_server_path)
 
     missing = 0
     total = 0
+    last_update = 0
 
     path = Path(config.get(ConfigKey.PLEX_MEDIA_SERVER_PATH) + 'Media/localhost')
     if not path.exists():
@@ -238,10 +240,12 @@ def preview_thumbnails(
                 if print_folders is True:
                     echo(b.path[len('localhost/') :], newline=True)
                 if progress is True:
-                    echo(
-                        f'Remaining: {missing}\nProcessed: {total-missing}\nTotal: {total}\nRemaining: {round(missing*100/total, 2)}%',
-                        False,
-                    )
+                    if last_update + update_rate >= total:
+                        echo(
+                            f'Remaining: {missing} Processed: {total-missing} Total: {total} Remaining: {round(missing*100/total, 2)}%',
+                            False,
+                        )
+                        last_update = total
 
     if summary is True:
         if print_json is True:
