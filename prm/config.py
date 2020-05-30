@@ -46,7 +46,7 @@ class Config:
                 config_value = self._get(config_key, overriden=Overriden.ONLY_CONFIG)
             if config_value:
                 if config_value.endswith('/'):
-                    raise click.Abort("All paths should have a leading slash")
+                    raise ValueError("All paths should have a leading slash")
                 self._set(config_key, str(Path(config_value).expanduser()), overriden=overriden)
 
     def _load(self) -> None:
@@ -101,7 +101,7 @@ class Config:
 
         value = self._cached_config.get(key)
         if required is True and not value:
-            raise click.Abort("Value not given for required key")
+            raise ValueError("Value not given for required key")
 
     def get(self, config_key: ConfigKey, required: bool = True) -> Optional[Any]:
         return self._get(config_key, required, overriden=Overriden.OVERRIDEN_THEN_CONFIG)

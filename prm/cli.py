@@ -67,8 +67,8 @@ def clean(after_manual_import: bool, manual_import_partials: bool):
             f"""
             path="{config.get(ConfigKey.DOWNLOAD_COMPLETE_PATH)}"
             echo "Deleting extra files"
-            find ${{path}} -type f \( -iname "*sample*" -o -iname "*.nfo" -o -iname "*.nzb" -o -iname "*.jpg" \
-            -o -iname "*.srr" -o -iname "*.url" -o -iname "*.txt" \) -print -delete
+            find ${{path}} -type f \\( -iname "*sample*" -o -iname "*.nfo" -o -iname "*.nzb" -o -iname "*.jpg" \
+            -o -iname "*.srr" -o -iname "*.url" -o -iname "*.txt" \\) -print -delete
             echo "Deleting empty Films folders"
             find ${{path}}/Films -type d -empty -print -delete
             echo "Deleting empty TV folders"
@@ -101,11 +101,13 @@ def upload(
     config.clear_overriden()
 
     if all and any((local_server_setup, media, plex_data)):
-        raise click.Abort("If --all is specified, no other related options should be")
+        echo("If --all is specified, no other related options should be")
+        raise click.Abort()
     if all:
         local_server_setup = media = plex_data = True
     elif not any((local_server_setup, media, plex_data)):
-        raise click.Abort("No target options given")
+        echo("No target options given")
+        raise click.Abort()
 
     if rclone_remote:
         config.set_value(ConfigKey.RCLONE_REMOTE, rclone_remote)
@@ -188,23 +190,30 @@ def plex():
 @click.option('--json', '-j', 'print_json', is_flag=True)
 @click.option('--progress', '-p', is_flag=True)
 @click.option('--plex-media-server-path', '-pp', default='', type=str)
-def preview_thumbnails(summary: bool, print_folders: bool, print_json: bool, progress: bool, plex_media_server_path: str):
+def preview_thumbnails(
+    summary: bool, print_folders: bool, print_json: bool, progress: bool, plex_media_server_path: str
+):
     config.clear_overriden()
 
     if not any((summary, print_folders)):
-        raise click.Abort("Summary or print must be given")
+        echo("Summary or print must be given")
+        raise click.Abort()
 
     if print_json is True and summary is False:
-        raise click.Abort("Summary must be given when using JSON")
+        echo("Summary must be given when using JSON")
+        raise click.Abort()
 
     if progress is True and print_json is True:
-        raise click.Abort("Progress does not support JSON")
+        echo("Progress does not support JSON")
+        raise click.Abort()
 
     if progress is True and summary is False:
-        raise click.Abort("Summary must be given if using progress")
+        echo("Summary must be given if using progress")
+        raise click.Abort()
 
     # if progress is True and print_folders is True:
-    #     raise click.Abort("Progress does not support printing folders")
+    #     echo("Progress does not support printing folders")
+    #     raise click.Abort()
 
     if plex_media_server_path:
         config.set_value(ConfigKey.PLEX_MEDIA_SERVER_PATH, plex_media_server_path)
@@ -214,7 +223,8 @@ def preview_thumbnails(summary: bool, print_folders: bool, print_json: bool, pro
 
     path = Path(config.get(ConfigKey.PLEX_MEDIA_SERVER_PATH) + 'Media/localhost')
     if not path.exists():
-        raise click.Abort("Plex Media Server/Media/localhost not found")
+        echo("Plex Media Server/Media/localhost not found")
+        raise click.Abort()
 
     for a in os.scandir(path):
         if not a.is_dir():
@@ -228,15 +238,15 @@ def preview_thumbnails(summary: bool, print_folders: bool, print_json: bool, pro
                 if print_folders is True:
                     echo(b.path[len('localhost/') :], newline=True)
                 if progress is True:
-                    echo(f'Remaining: {missing}\nProcessed: {total-missing}\nTotal: {total}\nRemaining: {round(missing*100/total, 2)}%')
+                    echo(
+                        f'Remaining: {missing}\nProcessed: {total-missing}\nTotal: {total}\nRemaining: {round(missing*100/total, 2)}%',
+                        False,
+                    )
 
     if summary is True:
         if print_json is True:
-            print(json.dumps({
-                'remaining': missing,
-                'total': total
-            }))
+            echo(json.dumps({'remaining': missing, 'total': total}))
         else:
-            print(
+            echo(
                 f'Remaining: {missing}\nProcessed: {total-missing}\nTotal: {total}\nRemaining: {round(missing*100/total, 2)}%'
             )
