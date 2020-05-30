@@ -69,9 +69,9 @@ class Config:
                 self._cached_config = dict(config)
                 break
 
-        self._clean()
-
         self._loaded = True
+
+        self._clean()
 
     def _load_if_needed(self) -> None:
         if self._loaded is False:
