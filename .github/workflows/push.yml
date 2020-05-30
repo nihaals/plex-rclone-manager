@@ -23,7 +23,7 @@ jobs:
         with:
           create_virtualenvs: 'true'
       - name: Build
-        run: poetry build
+        run: poetry build --format wheel
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
