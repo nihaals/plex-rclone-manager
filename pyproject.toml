@@ -5,7 +5,8 @@ description = ""
 authors = ["Nihaal Sangha <me@niha.al>"]
 license = "MIT"
 packages = [
-    { include = "prm" }
+    { include = "prm" },
+    { include = "pecho" }
 ]
 [tool.poetry.scripts]
 prm = "prm.cli:cli"
