@@ -94,6 +94,8 @@ class Config:
         ):
             return self._overriden[key]
         if overriden is Overriden.ONLY_OVERRIDEN:
+            if required is True:
+                raise ValueError("Value not given for required key")
             return
         self._load_if_needed()
 
