@@ -89,10 +89,8 @@ class Config:
 
     def _get(self, config_key: ConfigKey, required: bool = False, *, overriden: Overriden) -> Optional[Any]:
         key = config_key.name.lower()
-        if (
-            key in self._overriden
-            and overriden is Overriden.ONLY_OVERRIDEN
-            or overriden is Overriden.OVERRIDEN_THEN_CONFIG
+        if key in self._overriden and (
+            overriden is Overriden.ONLY_OVERRIDEN or overriden is Overriden.OVERRIDEN_THEN_CONFIG
         ):
             return self._overriden[key]
         if overriden is Overriden.ONLY_OVERRIDEN:
