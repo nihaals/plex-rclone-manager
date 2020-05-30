@@ -102,6 +102,7 @@ class Config:
         value = self._cached_config.get(key)
         if required is True and not value:
             raise ValueError("Value not given for required key")
+        return value
 
     def get(self, config_key: ConfigKey, required: bool = True) -> Optional[Any]:
         return self._get(config_key, required, overriden=Overriden.OVERRIDEN_THEN_CONFIG)
