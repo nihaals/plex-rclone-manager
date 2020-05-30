@@ -21,11 +21,13 @@
 # SOFTWARE.
 
 
+import json
 import os
 import subprocess
 import textwrap
+from copy import copy
 from pathlib import Path
-import json
+
 import click
 
 import pecho
@@ -35,7 +37,7 @@ from .config import Config, ConfigKey
 
 
 def echo(text: str, newline: bool = True) -> None:
-    pecho.echo(text, newline=newline, print_func=click.echo)
+    pecho.echo(text, newline=newline, print_func=click.echo, nl=False)
 
 
 def process_multiline(text: str) -> str:
@@ -245,7 +247,7 @@ def preview_thumbnails(
                             f'Remaining: {missing} Processed: {total-missing} Total: {total} Remaining: {round(missing*100/total, 2)}%',
                             False,
                         )
-                        last_update = total
+                        last_update = copy(total)
 
     if summary is True:
         if print_json is True:
