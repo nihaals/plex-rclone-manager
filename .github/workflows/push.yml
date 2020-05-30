@@ -32,7 +32,7 @@ jobs:
           path: .venv
           key: poetry-venv-${{ runner.os }}-${{ steps.python-version.outputs.version }}
       - name: Install/update package and dependencies
-        run: poetry install
+        run: poetry install --no-root
       - name: Build
         run: poetry build
       - name: Upload artifacts
