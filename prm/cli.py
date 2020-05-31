@@ -28,7 +28,7 @@ import sys
 import textwrap
 from copy import copy
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 import click
 import pecho
