@@ -242,7 +242,7 @@ def preview_thumbnails(
                 if print_folders is True:
                     echo(b.path[len('localhost/') :], newline=True)
                 if progress is True:
-                    if last_update + update_rate >= total:
+                    if last_update + update_rate <= total:
                         echo(
                             f'Remaining: {missing} Processed: {total-missing} Total: {total} Remaining: {round(missing*100/total, 2)}%',
                             False,
