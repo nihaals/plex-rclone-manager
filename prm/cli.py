@@ -166,6 +166,7 @@ def upload(
             /usr/local/bin/rclone move \\
             ~/tmp/plex_server_backups/dot_config {config.get(ConfigKey.RCLONE_REMOTE)}:/Backups/Server/Config \\
             -v \\
+            --transfers=1 \\
             --progress
             """
         )
@@ -184,6 +185,7 @@ def upload(
             /usr/local/bin/rclone move \\
             ~/tmp/plex_server_backups/plex_data {config.get(ConfigKey.RCLONE_REMOTE)}:/Backups/Plex \\
             -v \\
+            --transfers=1 \\
             --progress
             """
         )
