@@ -61,7 +61,7 @@ class Config:
                 continue
             with open(path) as fp:
                 if str(path).endswith(('.json', '.yml', '.yaml')):
-                    config = yaml.load(fp)
+                    config = yaml.full_load(fp)
                 elif str(path).endswith('.toml'):
                     config = toml.load(fp)
                 else:
