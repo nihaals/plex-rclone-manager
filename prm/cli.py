@@ -116,21 +116,21 @@ def clean(after_manual_import: bool, manual_import_partials: bool):
 
 
 @cli.command()
-@click.option('--all', is_flag=True)
+@click.option('--all', 'all_', is_flag=True)
 @click.option('--local-server-setup', is_flag=True)
 @click.option('--media', is_flag=True)
 @click.option('--plex-data', is_flag=True)
 @click.option('--rclone-remote', '-r', required=False, type=str, autocompletion=rclone_remotes_autocomplete)
 @click.option('--plex-media-server-path', '-P', required=False, type=click.Path(file_okay=False, path_type=str))
 def upload(
-    all: bool, local_server_setup: bool, media: bool, plex_data: bool, rclone_remote: str, plex_media_server_path: str
+    all_: bool, local_server_setup: bool, media: bool, plex_data: bool, rclone_remote: str, plex_media_server_path: str
 ):
     config.clear_overriden()
 
-    if all and any((local_server_setup, media, plex_data)):
+    if all_ and any((local_server_setup, media, plex_data)):
         echo("If --all is specified, no other related options should be")
         raise click.Abort()
-    if all:
+    if all_:
         local_server_setup = media = plex_data = True
     elif not any((local_server_setup, media, plex_data)):
         echo("No target options given")
