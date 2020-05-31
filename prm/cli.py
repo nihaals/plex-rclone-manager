@@ -29,15 +29,15 @@ from copy import copy
 from pathlib import Path
 
 import click
-
 import pecho
+
 from prm import __version__
 
 from .config import Config, ConfigKey
 
 
 def echo(text: str, newline: bool = True) -> None:
-    pecho.echo(text, newline=newline, print_func=click.echo, nl=False)
+    pecho.echo(text, newline=newline, print_func=click.echo)
 
 
 def process_multiline(text: str) -> str:
