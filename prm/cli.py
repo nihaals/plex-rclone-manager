@@ -169,21 +169,6 @@ def upload(
             --progress
             """
         )
-    if media:
-        cmd += process_multiline(
-            f"""
-            echo "Moving processed content"
-            /usr/local/bin/rclone move \\
-            "{config.get(ConfigKey.LOCAL_FILES_PATH)}" {config.get(ConfigKey.RCLONE_REMOTE)}: \\
-            -v \\
-            --progress \\
-            --delete-empty-src-dirs \\
-            --exclude "/download/**" \\
-            --exclude "*.partial~" \\
-            --transfers=1 \\
-            --drive-stop-on-upload-limit
-            """
-        )
     if plex_data:
         cmd += process_multiline(
             f"""
@@ -200,6 +185,21 @@ def upload(
             ~/tmp/plex_server_backups/plex_data {config.get(ConfigKey.RCLONE_REMOTE)}:/Backups/Plex \\
             -v \\
             --progress
+            """
+        )
+    if media:
+        cmd += process_multiline(
+            f"""
+            echo "Moving processed content"
+            /usr/local/bin/rclone move \\
+            "{config.get(ConfigKey.LOCAL_FILES_PATH)}" {config.get(ConfigKey.RCLONE_REMOTE)}: \\
+            -v \\
+            --progress \\
+            --delete-empty-src-dirs \\
+            --exclude "/download/**" \\
+            --exclude "*.partial~" \\
+            --transfers=1 \\
+            --drive-stop-on-upload-limit
             """
         )
 
