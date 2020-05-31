@@ -120,7 +120,7 @@ def clean(after_manual_import: bool, manual_import_partials: bool):
 @click.option('--local-server-setup', is_flag=True)
 @click.option('--media', is_flag=True)
 @click.option('--plex-data', is_flag=True)
-@click.option('--rclone-remote', '-r', required=False, type=str, autocomplete=rclone_remotes_autocomplete)
+@click.option('--rclone-remote', '-r', required=False, type=str, autocompletion=rclone_remotes_autocomplete)
 @click.option('--plex-media-server-path', '-P', required=False, type=click.Path(file_okay=False, path_type=str))
 def upload(
     all: bool, local_server_setup: bool, media: bool, plex_data: bool, rclone_remote: str, plex_media_server_path: str
