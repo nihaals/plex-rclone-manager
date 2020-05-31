@@ -24,9 +24,11 @@
 import json
 import os
 import subprocess
+import sys
 import textwrap
 from copy import copy
 from pathlib import Path
+from typing import List
 
 import click
 import pecho
@@ -44,8 +46,31 @@ def process_multiline(text: str) -> str:
     return textwrap.dedent(text).strip()
 
 
-def execute(command: str) -> None:
+def execute(command: str, capture_output: bool = False) -> Optional[str]:
+    if sys.version_info >= (3, 7):
+        if capture_output is True:
+            return subprocess.run(command, shell=True, capture_output=True).stdout.decode()
+        subprocess.run(command, shell=True)
+        return
     subprocess.run(command, shell=True)
+    return '' if capture_output is True else None
+
+
+def get_rclone_remotes() -> List[str]:
+    output = execute('rclone listremotes', True)
+    if not output:
+        return []
+    lines = output.split('\n')
+    remotes = []
+    for line in lines:
+        line = line.strip()
+        if line.endswith(':'):
+            remotes.append(line)
+    return remotes
+
+
+def rclone_remotes_autocomplete(*args, **kwargs) -> List[str]:
+    return get_rclone_remotes()
 
 
 config = Config()
@@ -95,8 +120,8 @@ def clean(after_manual_import: bool, manual_import_partials: bool):
 @click.option('--local-server-setup', is_flag=True)
 @click.option('--media', is_flag=True)
 @click.option('--plex-data', is_flag=True)
-@click.option('--rclone-remote', '-r', default='', type=str)
-@click.option('--plex-media-server-path', '-P', default='', type=str)
+@click.option('--rclone-remote', '-r', required=False, type=str, autocomplete=rclone_remotes_autocomplete)
+@click.option('--plex-media-server-path', '-P', required=False, type=click.Path(file_okay=False, path_type=str))
 def upload(
     all: bool, local_server_setup: bool, media: bool, plex_data: bool, rclone_remote: str, plex_media_server_path: str
 ):
@@ -192,7 +217,7 @@ def plex():
 @click.option('--json', '-j', 'print_json', is_flag=True)
 @click.option('--progress', '-p', is_flag=True)
 @click.option('--update-rate', '-u', type=int, default=50)
-@click.option('--plex-media-server-path', '-P', default='', type=str)
+@click.option('--plex-media-server-path', '-P', required=False, type=click.Path(file_okay=False, path_type=str))
 def preview_thumbnails(
     summary: bool, print_folders: bool, print_json: bool, progress: bool, update_rate: int, plex_media_server_path: str
 ):
