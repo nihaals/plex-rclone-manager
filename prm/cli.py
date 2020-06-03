@@ -169,7 +169,7 @@ def upload(
             """
         )
 
-        if no_tar is True:
+        if no_tar is False:
             cmd += process_multiline(
                 f"""
                 file_path=~/"tmp/plex_server_backups/dot_config/$(date +"%Y/%m")"
@@ -192,7 +192,7 @@ def upload(
             """
         )
     if plex_data:
-        if no_tar is True:
+        if no_tar is False:
             cmd += process_multiline(
                 f"""
                 file_path=~/"tmp/plex_server_backups/plex_data/$(date +"%Y/%m")"
