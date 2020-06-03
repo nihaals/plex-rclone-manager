@@ -120,10 +120,17 @@ def clean(after_manual_import: bool, manual_import_partials: bool):
 @click.option('--local-server-setup', is_flag=True)
 @click.option('--media', is_flag=True)
 @click.option('--plex-data', is_flag=True)
+@click.option('--no-tar', '-t', is_flag=True)
 @click.option('--rclone-remote', '-r', required=False, type=str, autocompletion=rclone_remotes_autocomplete)
 @click.option('--plex-media-server-path', '-P', required=False, type=click.Path(file_okay=False, path_type=str))
 def upload(
-    all_: bool, local_server_setup: bool, media: bool, plex_data: bool, rclone_remote: str, plex_media_server_path: str
+    all_: bool,
+    local_server_setup: bool,
+    media: bool,
+    plex_data: bool,
+    no_tar: bool,
+    rclone_remote: str,
+    plex_media_server_path: str,
 ):
     config.clear_overriden()
 
@@ -134,6 +141,9 @@ def upload(
         local_server_setup = media = plex_data = True
     elif not any((local_server_setup, media, plex_data)):
         echo("No target options given")
+        raise click.Abort()
+    if no_tar and not any((media,)):
+        echo("No tar given for uploads that do not create a tar")
         raise click.Abort()
 
     if rclone_remote:
@@ -156,37 +166,54 @@ def upload(
             /usr/local/bin/rclone sync -v --progress \\
             ~/.shutdown \\
             {config.get(ConfigKey.RCLONE_REMOTE)}:/Backups/Server/Shutdown
+            """
+        )
 
-            file_path=~/"tmp/plex_server_backups/dot_config/$(date +"%Y/%m")"
-            mkdir -p "${{file_path}}"
-            /bin/tar -czhf "${{file_path}}/$(date +"%Y-%m-%d").tar.gz" \\
-            -C ~ \\
-            .config
+        if no_tar is True:
+            cmd += process_multiline(
+                f"""
+                file_path=~/"tmp/plex_server_backups/dot_config/$(date +"%Y/%m")"
+                mkdir -p "${{file_path}}"
+                /bin/tar -czhf "${{file_path}}/$(date +"%Y-%m-%d").tar.gz" \\
+                -C ~ \\
+                .config
+                """
+            )
 
+        cmd += process_multiline(
+            f"""
             /usr/local/bin/rclone move \\
             ~/tmp/plex_server_backups/dot_config {config.get(ConfigKey.RCLONE_REMOTE)}:/Backups/Server/Config \\
             -v \\
             --transfers=1 \\
-            --progress
+            --progress \\
+            --delete-empty-src-dirs \\
+            --drive-stop-on-upload-limit
             """
         )
     if plex_data:
+        if no_tar is True:
+            cmd += process_multiline(
+                f"""
+                file_path=~/"tmp/plex_server_backups/plex_data/$(date +"%Y/%m")"
+                mkdir -p "${{file_path}}"
+                /bin/tar -czhf  "${{file_path}}/$(date +"%Y-%m-%d").tar.gz" \\
+                -C ~ \\
+                "{config.get(ConfigKey.PLEX_MEDIA_SERVER_PATH)}Media/" \\
+                "{config.get(ConfigKey.PLEX_MEDIA_SERVER_PATH)}Metadata/" \\
+                "{config.get(ConfigKey.PLEX_MEDIA_SERVER_PATH)}Plug-ins/" \\
+                "{config.get(ConfigKey.PLEX_MEDIA_SERVER_PATH)}Plug-in Support/"
+                """
+            )
         cmd += process_multiline(
             f"""
-            file_path=~/"tmp/plex_server_backups/plex_data/$(date +"%Y/%m")"
-            mkdir -p "${{file_path}}"
-            /bin/tar -czhf  "${{file_path}}/$(date +"%Y-%m-%d").tar.gz" \\
-            -C ~ \\
-            "{config.get(ConfigKey.PLEX_MEDIA_SERVER_PATH)}Media/" \\
-            "{config.get(ConfigKey.PLEX_MEDIA_SERVER_PATH)}Metadata/" \\
-            "{config.get(ConfigKey.PLEX_MEDIA_SERVER_PATH)}Plug-ins/" \\
-            "{config.get(ConfigKey.PLEX_MEDIA_SERVER_PATH)}Plug-in Support/"
-
             /usr/local/bin/rclone move \\
             ~/tmp/plex_server_backups/plex_data {config.get(ConfigKey.RCLONE_REMOTE)}:/Backups/Plex \\
             -v \\
             --transfers=1 \\
-            --progress
+            --progress \\
+            --delete-empty-src-dirs \\
+            --drive-stop-on-upload-limit
             """
         )
     if media:
