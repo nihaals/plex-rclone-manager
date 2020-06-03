@@ -43,7 +43,7 @@ def echo(text: str, newline: bool = True) -> None:
 
 
 def process_multiline(text: str) -> str:
-    return textwrap.dedent(text).strip()
+    return textwrap.dedent(text).strip() + '\n'
 
 
 def execute(command: str, capture_output: bool = False) -> Optional[str]:
