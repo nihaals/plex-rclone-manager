@@ -88,7 +88,7 @@ def cli():
 def clean(after_manual_import: bool, manual_import_partials: bool):
     config.clear_overriden()
 
-    cmd = ''
+    cmd = 'set -x\n'
     if after_manual_import:
         cmd += process_multiline(
             f"""
@@ -141,7 +141,7 @@ def upload(
     if plex_media_server_path:
         config.set_value(ConfigKey.PLEX_MEDIA_SERVER_PATH, plex_media_server_path)
 
-    cmd = ''
+    cmd = 'set -x\n'
     if local_server_setup:
         cmd += process_multiline(
             f"""
