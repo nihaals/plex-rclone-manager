@@ -142,7 +142,7 @@ def upload(
     elif not any((local_server_setup, media, plex_data)):
         echo("No target options given")
         raise click.Abort()
-    if no_tar and not any((media,)):
+    if no_tar and not any((local_server_setup, plex_data)):
         echo("No tar given for uploads that do not create a tar")
         raise click.Abort()
 
