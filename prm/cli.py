@@ -176,6 +176,7 @@ def upload(
                 mkdir -p "${{file_path}}"
                 /bin/tar -czhf "${{file_path}}/$(date +"%Y-%m-%d").tar.gz" \\
                 -C ~ \\
+                --warning=no-file-ignored --warning=no-file-removed --warning=no-file-changed \\
                 .config
                 """
             )
@@ -199,6 +200,7 @@ def upload(
                 mkdir -p "${{file_path}}"
                 /bin/tar -czhf  "${{file_path}}/$(date +"%Y-%m-%d").tar.gz" \\
                 -C ~ \\
+                --warning=no-file-ignored --warning=no-file-removed --warning=no-file-changed \\
                 "{config.get(ConfigKey.PLEX_MEDIA_SERVER_PATH)}Media/" \\
                 "{config.get(ConfigKey.PLEX_MEDIA_SERVER_PATH)}Metadata/" \\
                 "{config.get(ConfigKey.PLEX_MEDIA_SERVER_PATH)}Plug-ins/" \\
