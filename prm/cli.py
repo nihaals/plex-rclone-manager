@@ -243,11 +243,11 @@ def plex():
 
 
 @plex.command(name='preview-thumbnails')
-@click.option('--summary', '-s', is_flag=True)
-@click.option('--print', '-p', 'print_folders', is_flag=True)
-@click.option('--json', '-j', 'print_json', is_flag=True)
-@click.option('--progress', '-p', is_flag=True)
-@click.option('--update-rate', '-u', type=int, default=50)
+@click.option('--summary', '-s', is_flag=True, help="Show summary of statistics when completed.")
+@click.option('--print', 'print_folders', is_flag=True, help="Print unprocessed folders when finding one")
+@click.option('--json', '-j', 'print_json', is_flag=True, help="Print a JSON summary")
+@click.option('--progress', '-p', is_flag=True, help="Show summary every update-rate checked folders")
+@click.option('--update-rate', '-u', type=int, default=50, help="How often progress should be updated")
 @click.option('--plex-media-server-path', '-P', required=False, type=click.Path(file_okay=False, path_type=str))
 def preview_thumbnails(
     summary: bool, print_folders: bool, print_json: bool, progress: bool, update_rate: int, plex_media_server_path: str
