@@ -293,17 +293,18 @@ def preview_thumbnails(
             if b.path.endswith('.bundle') is False or len(tuple(os.scandir(os.path.join(b.path, 'Contents')))) == 0:
                 continue
             total += 1
-            if Path(b.path).joinpath('Contents', 'Indexes', 'index-sd.bif').exists() is False:
+            no_thumbnails = Path(b.path).joinpath('Contents', 'Indexes', 'index-sd.bif').exists() is False
+            if no_thumbnails is True:
                 missing += 1
                 if print_folders is True:
                     echo(b.path[len('localhost/') :], newline=True)
-                if progress is True:
-                    if last_update + update_rate <= total or print_folders is True:
-                        echo(
-                            f'Remaining: {missing} Processed: {total-missing} Total: {total} Remaining: {round(missing*100/total, 2)}%',
-                            False,
-                        )
-                        last_update = copy(total)
+            if progress is True:
+                if last_update + update_rate <= total or (print_folders is True and no_thumbnails is True):
+                    echo(
+                        f'Remaining: {missing} Processed: {total-missing} Total: {total} Remaining: {round(missing*100/total, 2)}%',
+                        False,
+                    )
+                    last_update = copy(total)
 
     if summary is True:
         if print_json is True:
